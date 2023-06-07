@@ -25,25 +25,13 @@ def readCsv(filePath):
 		sys.exit(0)
 	headers = f.readline().split(',')
 	f.close()
-	x,y= np.loadtxt(filePath, delimiter=',', unpack=True, skiprows=1, dtype=int)
+	x,y = np.loadtxt(filePath, delimiter=',', unpack=True, skiprows=1, dtype=int)
 	return headers,x,y
-
-def estimatePrice(mileage, theta0, theta1):
-	return theta0 + theta1 * mileage
 
 def linearRegression(x, y):
 	theta0 = 0
 	theta1 = 0
 	print(x, y)
-	for _ in range(MAX_ITERATIONS):
-		tmp_theta0 = 0
-		tmp_theta1 = 0
-		for i in range(len(x)):
-			print(theta0, theta1)
-			tmp_theta0 += estimatePrice(x[i], theta0, theta1) - y[i]
-			tmp_theta1 += (estimatePrice(x[i], theta0, theta1) - y[i]) * x[i]
-		theta0 -= theta0 - (tmp_theta0 * (LEARNING_RATE / len(x)))
-		theta1 -= tmp_theta1 * (LEARNING_RATE/ len(x))
 	print(theta0, theta1)
 
 def train(filePath):
