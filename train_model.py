@@ -2,7 +2,8 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from ML_kit.array_tools import normalize_array
+from ml_tools import normalize_array
+from ml_tools import isValidPath
 
 LEARNING_RATE = 0.035
 EPOCHS = 2200
@@ -79,5 +80,9 @@ def train_model(filePath):
 	
 if __name__ == '__main__':
 	if (len(sys.argv) <= 1):
-		sys.exit('Usage: python train.py <csv file>')
+		sys.exit('Usage: python3 train.py <csv file>')
+	try:
+		isValidPath(sys.argv[1])
+	except Exception as e:
+		sys.exit(e)
 	train_model(sys.argv[1])
