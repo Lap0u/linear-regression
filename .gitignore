@@ -1,4 +1,3 @@
 **/*.pdf
 **/*pycache*
 **/pyc
-theta.json
