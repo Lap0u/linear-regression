@@ -2,6 +2,7 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from ML_kit.array_tools import normalize_array
 
 LEARNING_RATE = 0.035
 EPOCHS = 2200
@@ -13,9 +14,6 @@ def displayPlot(headers,mileage, price, estimate):
 	plt.scatter(mileage, price, marker='+', label = 'data')
 	plt.plot(mileage, estimate, color='red', label = 'estimate')
 	plt.show()
-
-def normalize_array(X):
-    return (X - X.min()) / (X.max() - X.min())
 
 def readCsv(filePath):
 	headers = np.loadtxt(filePath, delimiter=',', unpack=True, max_rows=1, dtype=str)
@@ -72,7 +70,7 @@ def linearRegression(mileage, price):
 	print('epochs', len(costArray))
 	return thetaSlope, thetaIntercept
 
-def train(filePath):
+def train_model(filePath):
 	headers,mileage,price = readCsv(filePath)
 	normalizedMileage = normalize_array(mileage)
 	normalizedPrice = normalize_array(price)
@@ -82,5 +80,4 @@ def train(filePath):
 if __name__ == '__main__':
 	if (len(sys.argv) <= 1):
 		sys.exit('Usage: python train.py <csv file>')
-	# train(sys.argv[1])
-	train('data.csv')
+	train_model(sys.argv[1])
