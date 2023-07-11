@@ -7,7 +7,7 @@ def signal_handler(sig, frame):
 signal.signal(signal.SIGQUIT, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
 
-def getTheta():
+def get_theta():
 	try:
 		f = open('theta.json', 'r')
 	except OSError:
@@ -19,7 +19,7 @@ def getTheta():
 	return data['theta0'], data['theta1']
 
 def predict(input):
-	x,y = getTheta()
+	x,y = get_theta()
 	print(x + y * input)
 
 if __name__ == '__main__':

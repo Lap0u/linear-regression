@@ -8,7 +8,7 @@ from ml_tools import isValidPath
 LEARNING_RATE = 0.035
 EPOCHS = 2200
 
-def displayPlot(headers,mileage, price, estimate):
+def display_plot(headers,mileage, price, estimate):
 	plt.figure(figsize=(10,6))
 	plt.xlabel(headers[0])
 	plt.ylabel(headers[1])
@@ -16,67 +16,55 @@ def displayPlot(headers,mileage, price, estimate):
 	plt.plot(mileage, estimate, color='red', label = 'estimate')
 	plt.show()
 
-def readCsv(filePath):
-	headers = np.loadtxt(filePath, delimiter=',', unpack=True, max_rows=1, dtype=str)
-	mileage,price= np.loadtxt(filePath, delimiter=',', unpack=True, skiprows=1, dtype=int)
+def read_csv(file_path):
+	headers = np.loadtxt(file_path, delimiter=',', unpack=True, max_rows=1, dtype=str)
+	mileage,price= np.loadtxt(file_path, delimiter=',', unpack=True, skiprows=1, dtype=int)
 	return headers,mileage,price
 
-def estimatePrice(thetaSlope, thetaIntercept, mileage):
-	return thetaSlope * mileage + thetaIntercept
+def estimate_price(theta_slope, theta_intercept, mileage):
+	return theta_slope * mileage + theta_intercept
 
-def costFunction(thetaSlope, thetaIntercept, mileage, price, m_length):
+def cost_function(theta_slope, theta_intercept, mileage, price, m_length):
 	cost = 0
 	for i in range(m_length):
-		f = estimatePrice(thetaSlope, thetaIntercept, mileage[i])
+		f = estimate_price(theta_slope, theta_intercept, mileage[i])
 		cost = cost + (f - price[i]) ** 2
 	return cost / (m_length * 2)
 
-def derivatedSlope(thetaSlope, thetaIntercept, mileage, price, m_length):
-	sum = 0
+def derivated_slope(theta_slope, theta_intercept, mileage, price, m_length):
+	sum_ = 0
 	for mileage_i, price_i in zip(mileage, price):
-		est = estimatePrice(thetaSlope, thetaIntercept, mileage_i)
-		print('est1', est)
-		sum = sum + (estimatePrice(thetaSlope, thetaIntercept, mileage_i) - price_i) * mileage_i
-	print('sum1', sum)
-	print('m_length1', m_length)
-	return sum / m_length
+		sum_ = sum_ + (estimate_price(theta_slope, theta_intercept, mileage_i) - price_i) * mileage_i
+	return sum_ / m_length
 
-def derivatedFix(thetaSlope, thetaIntercept, mileage, price, m_length):
-	sum = 0
+def derivated_fix(theta_slope, theta_intercept, mileage, price, m_length):
+	sum_ = 0
 	for mileage_i, price_i in zip(mileage, price):
-		est = estimatePrice(thetaSlope, thetaIntercept, mileage_i)
-		print('est2', est)
-		sum = sum + estimatePrice(thetaSlope, thetaIntercept, mileage_i) - price_i
-	print('sum2', sum)
-	print('m_length2', m_length)
-	return sum / m_length
+		sum_ = sum_ + estimate_price(theta_slope, theta_intercept, mileage_i) - price_i
+	return sum_ / m_length
 			
-def linearRegression(mileage, price):
+def linear_regression(mileage, price):
 	m_length = mileage.shape[0]
-	costArray = []
-	thetaSlope = 0
-	thetaIntercept = 0
+	cost_array = []
+	theta_slope = 0
+	theta_intercept = 0
 	for _ in range(EPOCHS):
-		cost = costFunction(thetaSlope, thetaIntercept, mileage, price, m_length)
-		costArray.append(cost)
-		d_Slope = derivatedSlope(thetaSlope, thetaIntercept, mileage, price, m_length)
-		d_fix = derivatedFix(thetaSlope, thetaIntercept, mileage, price, m_length)
-		thetaSlope = thetaSlope - LEARNING_RATE * d_Slope
-		thetaIntercept = thetaIntercept - LEARNING_RATE * d_fix
-		if (len(costArray) > 1 and (costArray[-2] < costArray[-1] or costArray[-2] - costArray[-1] < 10e-9)):
+		cost = cost_function(theta_slope, theta_intercept, mileage, price, m_length)
+		cost_array.append(cost)
+		d_slope = derivated_slope(theta_slope, theta_intercept, mileage, price, m_length)
+		d_fix = derivated_fix(theta_slope, theta_intercept, mileage, price, m_length)
+		theta_slope = theta_slope - LEARNING_RATE * d_slope
+		theta_intercept = theta_intercept - LEARNING_RATE * d_fix
+		if (len(cost_array) > 1 and (cost_array[-2] < cost_array[-1] or cost_array[-2] - cost_array[-1] < 10e-9)):
 			break
-	print('thetaSlope', thetaSlope)
-	print('thetaIntercept', thetaIntercept)
-	print('cost', cost)
-	print('epochs', len(costArray))
-	return thetaSlope, thetaIntercept
+	return theta_slope, theta_intercept
 
-def train_model(filePath):
-	headers,mileage,price = readCsv(filePath)
-	normalizedMileage = normalize_array(mileage)
-	normalizedPrice = normalize_array(price)
-	thetaSlope,thetaIntercept = linearRegression(normalizedMileage,normalizedPrice)
-	displayPlot(headers,normalizedMileage,normalizedPrice, estimatePrice(thetaSlope, thetaIntercept, normalizedMileage))
+def train_model(file_path):
+	headers,mileage,price = read_csv(file_path)
+	normalized_mileage = normalize_array(mileage)
+	normalized_price = normalize_array(price)
+	theta_slope,theta_intercept = linear_regression(normalized_mileage,normalized_price)
+	display_plot(headers,normalized_mileage,normalized_price, estimate_price(theta_slope, theta_intercept, normalized_mileage))
 	
 if __name__ == '__main__':
 	if (len(sys.argv) <= 1):
