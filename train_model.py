@@ -1,7 +1,7 @@
 import sys
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+import plotly.express as px
 import ml_tools as tools
 import argparse
 
@@ -9,12 +9,9 @@ LEARNING_RATE = 0.35
 EPOCHS = 200
 
 def display_plot(headers,mileage, price, estimate):
-	plt.figure(figsize=(10,6))
-	plt.xlabel(headers[0])
-	plt.ylabel(headers[1])
-	plt.scatter(mileage, price, marker='+', label = 'data')
-	plt.plot(mileage, estimate, color='red', label = 'estimate')
-	plt.show()
+	fig = px.scatter(x=mileage, y=price, title='Price / Mileage')
+	fig.add_scatter(x=mileage, y=estimate, mode='lines', name='estimate')
+	fig.show()
 
 def read_csv(file_path):
 	headers = np.loadtxt(file_path, delimiter=',', unpack=True, max_rows=1, dtype=str)
@@ -64,9 +61,10 @@ def train_model(file_path):
 	headers,mileage,price = read_csv(file_path)
 	normalized_mileage = tools.normalize_array(mileage)
 	normalized_price = tools.normalize_array(price)
-	theta_slope,theta_intercept = linear_regression(normalized_mileage,normalized_price)
-	display_plot(headers,normalized_mileage,normalized_price, estimate_price(theta_slope, theta_intercept, normalized_mileage))
-	
+	normalized_theta_slope,normalized_theta_intercept = linear_regression(normalized_mileage,normalized_price)
+	estimated_price = estimate_price(normalized_theta_slope, normalized_theta_intercept, normalized_mileage)
+	display_plot(headers, normalized_mileage, normalized_price, estimated_price)
+
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Train a linear regression model')
 	parser.add_argument('file_path', metavar='file_path', type=str, help='csv file path')
