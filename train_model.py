@@ -62,8 +62,11 @@ def train_model(file_path):
 	normalized_mileage = tools.normalize_array(mileage)
 	normalized_price = tools.normalize_array(price)
 	normalized_theta_slope,normalized_theta_intercept = linear_regression(normalized_mileage,normalized_price)
-	estimated_price = estimate_price(normalized_theta_slope, normalized_theta_intercept, normalized_mileage)
-	display_plot(headers, normalized_mileage, normalized_price, estimated_price)
+	theta_slope, theta_intercept = tools.denormalize_theta(normalized_theta_slope, normalized_theta_intercept, mileage, price)
+	estimated_price = estimate_price(theta_slope, theta_intercept, mileage)
+	normalized_estimated_price = estimate_price(normalized_theta_slope, normalized_theta_intercept, normalized_mileage)
+	display_plot(headers, mileage, price, estimated_price)
+	display_plot(headers, normalized_mileage, normalized_price, normalized_estimated_price)
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='Train a linear regression model')
