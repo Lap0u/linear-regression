@@ -6,7 +6,7 @@ import ml_tools as tools
 import argparse
 
 LEARNING_RATE = 0.35
-EPOCHS = 200
+EPOCHS = 500
 
 def display_plot(headers,mileage, price, estimate):
 	fig = px.scatter(x=mileage, y=price, title='Price / Mileage')
