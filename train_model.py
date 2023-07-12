@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import ml_tools as tools
+import argparse
 
 LEARNING_RATE = 0.35
 EPOCHS = 200
@@ -67,10 +68,11 @@ def train_model(file_path):
 	display_plot(headers,normalized_mileage,normalized_price, estimate_price(theta_slope, theta_intercept, normalized_mileage))
 	
 if __name__ == '__main__':
-	if (len(sys.argv) <= 1):
-		sys.exit('Usage: python3 train.py <csv file>')
+	parser = argparse.ArgumentParser(description='Train a linear regression model')
+	parser.add_argument('file_path', metavar='file_path', type=str, help='csv file path')
+	args = parser.parse_args()
 	try:
-		tools.is_valid_path(sys.argv[1])
+		tools.is_valid_path(args.file_path)
 	except Exception as e:
 		sys.exit(e)
-	train_model(sys.argv[1])
+	train_model(args.file_path)
