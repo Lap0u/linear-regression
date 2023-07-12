@@ -125,17 +125,13 @@ def heat_map(df):
 def normalize_array(x):
     return (x - x.min()) / (x.max() - x.min())
 
-def denormalize_array(x, x_norm):
-    return x_norm * (x.max() - x.min()) + x.min()
 
 def denormalize_theta(theta0, theta1, x, y):
     x_min = x.min()
     x_max = x.max()
     y_min = y.min()
     y_max = y.max()
-    denorm_theta0 = theta0 * (y_max - y_min) / (x_max - x_min) + y_min - theta1 * y_min / (x_max - x_min)
-    denorm_theta1 = theta1 * (y_max - y_min) / (x_max - x_min)
-    return denorm_theta0, denorm_theta1
+    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
 
 
 def sigmoid_(z):
