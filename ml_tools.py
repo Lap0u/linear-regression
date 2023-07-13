@@ -126,13 +126,5 @@ def normalize_array(x):
     return (x - x.min()) / (x.max() - x.min())
 
 
-def denormalize_theta(theta0, theta1, x, y):
-    x_min = x.min()
-    x_max = x.max()
-    y_min = y.min()
-    y_max = y.max()
-    return theta0 * (y_max - y_min) + y_min, theta1 * (y_max - y_min) / (x_max - x_min)
-
-
 def sigmoid_(z):
     return 1 / (1 + np.exp(-z))

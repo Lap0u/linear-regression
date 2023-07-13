@@ -75,7 +75,17 @@ def plot_cost(cost_array):
     fig.show()
 
 
-def train_model(file_path):
+def save_theta(theta_slope, theta_intercept, np_km, np_price):
+    km_min = tools.min_(np_km)
+    km_max = tools.max_(np_km)
+    price_min = tools.min_(np_price)
+    price_max = tools.max_(np_price)
+    theta_slope = (theta_slope * (price_max - price_min)) / (km_max - km_min)
+    theta_intercept = theta_intercept * (price_max - price_min) + price_min
+    np.save('theta.npy', [theta_slope, theta_intercept])
+
+
+def train_model(file_path, display, cost):
     headers, df = read_csv(file_path)
     np_km = df['km'].to_numpy()
     np_price = df['price'].to_numpy()
@@ -83,14 +93,14 @@ def train_model(file_path):
     norm_y = tools.normalize_array(np_price)
     normalized_theta_slope, normalized_theta_intercept, cost_array = linear_regression(
         norm_x, norm_y)
-    denormalized_theta_intercept, denormalized_theta_slope = tools.denormalize_theta(
-        normalized_theta_intercept, normalized_theta_slope, np_km, np_price)
-    plot_cost(cost_array)
-    norm_df = pd.DataFrame({'km': norm_x, 'price': norm_y})
-    display_plot(headers, norm_df, estimate_price(
-        normalized_theta_slope, normalized_theta_intercept, norm_x))
-    display_plot(headers, df, estimate_price(
-        denormalized_theta_slope, denormalized_theta_intercept, np_km))
+    if (cost == True):
+        plot_cost(cost_array)
+    if (display == True):
+        norm_df = pd.DataFrame({'km': norm_x, 'price': norm_y})
+        display_plot(headers, norm_df, estimate_price(
+            normalized_theta_slope, normalized_theta_intercept, norm_x))
+    save_theta(normalized_theta_slope,
+               normalized_theta_intercept, np_km, np_price)
 
 
 if __name__ == '__main__':
@@ -98,9 +108,19 @@ if __name__ == '__main__':
         description='Train a linear regression model')
     parser.add_argument('file_path', metavar='file_path',
                         type=str, help='csv file path')
+    parser.add_argument('-d', '--display',
+                        help='display plot', action='store_true')
+    parser.add_argument(
+        '-c', '--cost', help='plot cost function', action='store_true')
+    parser.add_argument('-e', '--epochs', help='number of epochs')
+    parser.add_argument('-l', '--learning_rate', help='learning rate')
     args = parser.parse_args()
     try:
         tools.is_valid_path(args.file_path)
+        if args.epochs:
+            EPOCHS = int(args.epochs)
+        if args.learning_rate:
+            LEARNING_RATE = float(args.learning_rate)
     except Exception as e:
         sys.exit(e)
-    train_model(args.file_path)
+    train_model(args.file_path, args.display, args.cost)
