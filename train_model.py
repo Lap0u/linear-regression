@@ -1,8 +1,8 @@
-import sys
 import pandas as pd
 import numpy as np
 import plotly.express as px
 import ml_tools as tools
+from tqdm import tqdm
 import argparse
 
 LEARNING_RATE = 0.035
@@ -64,7 +64,6 @@ def linear_regression(mileage, price):
             theta_slope, theta_intercept, mileage, price, len(mileage)))
         p_history.append([theta_slope, theta_intercept])
         if (len(cost_array) > 1 and (cost_array[-2] < cost_array[-1] or cost_array[-2] - cost_array[-1] < 10e-9)):
-            print("Cout stabilisé à l'epoch", i)
             break
     return theta_slope, theta_intercept, cost_array
 
@@ -85,12 +84,29 @@ def save_theta(theta_slope, theta_intercept, np_km, np_price):
     np.save('theta.npy', [theta_slope, theta_intercept])
 
 
-def train_model(file_path, display, cost):
+def find_best_learning_rate(theta_slope, theta_intercept):
+    best_learning = 0.001
+    _, _, cost = linear_regression(theta_slope, theta_intercept)
+    best_cost = cost[-1]
+    for i in tqdm(np.arange(0.001, 1, 0.001)):
+        global LEARNING_RATE
+        LEARNING_RATE = i
+        _, _, cost = linear_regression(theta_slope, theta_intercept)
+        if (cost[-1] < best_cost):
+            best_cost = cost[-1]
+            best_learning = i
+    print("Best learning rate:", best_learning)
+    LEARNING_RATE = best_cost
+
+
+def train_model(file_path, display, cost, learning_rate: bool):
     headers, df = read_csv(file_path)
     np_km = df['km'].to_numpy()
     np_price = df['price'].to_numpy()
     norm_x = tools.normalize_array(np_km)
     norm_y = tools.normalize_array(np_price)
+    if (learning_rate == True):
+        find_best_learning_rate(norm_x, norm_y)
     normalized_theta_slope, normalized_theta_intercept, cost_array = linear_regression(
         norm_x, norm_y)
     if (cost == True):
@@ -113,7 +129,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '-c', '--cost', help='plot cost function', action='store_true')
     parser.add_argument('-e', '--epochs', help='number of epochs')
-    parser.add_argument('-l', '--learning_rate', help='learning rate')
+    parser.add_argument('-l', '--learning_rate',
+                        action='store_true', help='find best learning rate')
     args = parser.parse_args()
     try:
         tools.is_valid_path(args.file_path)
@@ -123,4 +140,4 @@ if __name__ == '__main__':
             LEARNING_RATE = float(args.learning_rate)
     except Exception as e:
         sys.exit(e)
-    train_model(args.file_path, args.display, args.cost)
+    train_model(args.file_path, args.display, args.cost, args.learning_rate)
