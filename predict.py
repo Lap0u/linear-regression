@@ -29,7 +29,7 @@ if __name__ == '__main__':
     try:
         input = input('Enter a mileage: ')
         predict(int(input))
-    except (KeyboardInterrupt, EOFError, SystemExit):
+    except (KeyboardInterrupt, EOFError):
         exit("\nVous avez quitté le programme.")
     except ValueError:
         exit("\nVeuillez entrer un nombre entier.")

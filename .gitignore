@@ -1,3 +1,4 @@
 **/*.pdf
 **/*pycache*
 **/pyc
+theta.npy
