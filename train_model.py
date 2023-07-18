@@ -80,13 +80,18 @@ def plot_cost(cost_array):
 
 
 def save_theta(theta_slope, theta_intercept, np_km, np_price):
-    km_min = tools.min_(np_km)
-    km_max = tools.max_(np_km)
-    price_min = tools.min_(np_price)
-    price_max = tools.max_(np_price)
-    theta_slope = (theta_slope * (price_max - price_min)) / (km_max - km_min)
-    theta_intercept = theta_intercept * (price_max - price_min) + price_min
+    delta_km = tools.max_(np_km) - tools.min_(np_km)
+    delta_price = tools.max_(np_price) - tools.min_(np_price)
+    denormalized_slope = theta_slope * delta_price / delta_km
+    denormalized_intercept = (
+        delta_price * theta_intercept
+        + tools.min_(np_price)
+        - (theta_slope * (delta_price / delta_km) * tools.min_(np_km))
+    )
+    print(denormalized_slope)
+    print(denormalized_intercept)
     np.save("theta.npy", [theta_slope, theta_intercept])
+    return denormalized_slope, denormalized_intercept
 
 
 def find_best_learning_rate(theta_slope, theta_intercept):
@@ -117,14 +122,16 @@ def train_model(file_path, display, cost, learning_rate: bool, accuracy: bool):
     )
     if cost == True:
         plot_cost(cost_array)
+    denormalized_slope, denormalized_intercept = save_theta(
+        normalized_theta_slope, normalized_theta_intercept, np_km, np_price
+    )
     if display == True:
-        norm_df = pd.DataFrame({"km": norm_x, "price": norm_y})
+        df = pd.DataFrame({"km": np_km, "price": np_price})
         display_plot(
             headers,
-            norm_df,
-            estimate_price(normalized_theta_slope, normalized_theta_intercept, norm_x),
+            df,
+            estimate_price(denormalized_slope, denormalized_intercept, np_km),
         )
-    save_theta(normalized_theta_slope, normalized_theta_intercept, np_km, np_price)
     if accuracy == True:
         print(f"Accuracy: {((1 - cost_array[-1]) * 100):.4f}%")
 

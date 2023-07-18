@@ -129,5 +129,9 @@ def normalize_array(x):
     return (x - x.min()) / (x.max() - x.min())
 
 
+def denormalize_array(list, elem):
+    return (elem * (max(list) - min(list))) + min(list)
+
+
 def sigmoid_(z):
     return 1 / (1 + np.exp(-z))
