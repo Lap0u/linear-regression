@@ -13,8 +13,11 @@ def count(array):
 
 
 def load_data(filename: str, target_col_name: str, t: callable):
-    df = pd.read_csv(filename, sep=',', converters={target_col_name: t}).drop(
-        ['Index'], axis=1).select_dtypes(include=['float64', 'int64'])
+    df = (
+        pd.read_csv(filename, sep=",", converters={target_col_name: t})
+        .drop(["Index"], axis=1)
+        .select_dtypes(include=["float64", "int64"])
+    )
     y = df[target_col_name]
     x = df.drop([target_col_name], axis=1)
     return x, y
@@ -27,7 +30,7 @@ def mean(array):
 def min_(array):
     min_ = array[0]
     for i in range(len(array)):
-        if (array[i] < min_):
+        if array[i] < min_:
             min_ = array[i]
     return min_
 
@@ -44,7 +47,7 @@ def remove_empty_fields(array):
 def max_(array):
     max_ = array[0]
     for i in range(len(array)):
-        if (array[i] > max_):
+        if array[i] > max_:
             max_ = array[i]
     return max_
 
@@ -57,12 +60,12 @@ def std(array, mean):
 
 
 def is_valid_path(file_path):
-    if (path.isfile(file_path) == False):
-        raise Exception('File does not exist')
+    if path.isfile(file_path) == False:
+        raise Exception("File does not exist")
     if (os.access(file_path, os.R_OK)) == False:
-        raise Exception('File is not readable')
-    if (Path(file_path).suffix != '.csv'):
-        raise Exception('File is not a csv file')
+        raise Exception("File is not readable")
+    if Path(file_path).suffix != ".csv":
+        raise Exception("File is not a csv file")
 
 
 def plot_data(x, y, pos_label="y=1", neg_label="y=0"):
@@ -70,21 +73,21 @@ def plot_data(x, y, pos_label="y=1", neg_label="y=0"):
     negative = y == 0
 
     # Plot examples
-    plt.plot(x[positive, 0], x[positive, 1], 'k+', label=pos_label)
-    plt.plot(x[negative, 0], x[negative, 1], 'yo', label=neg_label)
+    plt.plot(x[positive, 0], x[positive, 1], "k+", label=pos_label)
+    plt.plot(x[negative, 0], x[negative, 1], "yo", label=neg_label)
 
 
 def map_feature(x1, x2):
     """
-    Feature mapping function to polynomial features    
+    Feature mapping function to polynomial features
     """
     x1 = np.atleast_1d(x1)
     x2 = np.atleast_1d(x2)
     degree = 6
     out = []
-    for i in range(1, degree+1):
+    for i in range(1, degree + 1):
         for j in range(i + 1):
-            out.append((x1**(i-j) * (x2**j)))
+            out.append((x1 ** (i - j) * (x2**j)))
     return np.stack(out, axis=1)
 
 
@@ -95,7 +98,7 @@ def plot_decision_boundary(w, b, x, y):
 
     if x.shape[1] <= 2:
         plot_x = np.array([min(x[:, 0]), max(x[:, 0])])
-        plot_y = (-1. / w[1]) * (w[0] * plot_x + b)
+        plot_y = (-1.0 / w[1]) * (w[0] * plot_x + b)
 
         plt.plot(plot_x, plot_y, c="b")
 

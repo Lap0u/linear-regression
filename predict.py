@@ -12,7 +12,7 @@ signal.signal(signal.SIGINT, signal_handler)
 
 def get_theta():
     try:
-        thetas = np.load('theta.npy')
+        thetas = np.load("theta.npy")
     except FileNotFoundError:
         exit("Le modèle n'a pas été entraîné.")
     print("theta_slope:", thetas[0])
@@ -25,9 +25,9 @@ def predict(input):
     print(x * input + y)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
-        input = input('Enter a mileage: ')
+        input = input("Enter a mileage: ")
         predict(int(input))
     except (KeyboardInterrupt, EOFError):
         exit("\nVous avez quitté le programme.")
