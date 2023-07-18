@@ -75,7 +75,12 @@ def linear_regression(mileage, price, best_learning_rate):
 
 
 def plot_cost(cost_array):
-    fig = px.line(x=np.arange(len(cost_array)), y=cost_array, title="Cost function")
+    fig = px.line(
+        x=np.arange(len(cost_array)),
+        y=cost_array,
+        title="Cost function",
+        labels={"x": "Epochs", "y": "Cost"},
+    )
     fig.show()
 
 
